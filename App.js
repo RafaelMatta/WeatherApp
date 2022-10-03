@@ -9,20 +9,21 @@
 import React from 'react';
 
 import {StyleSheet, Text, View} from 'react-native';
-import Search from './src/components/search/search';
+import Search from './src/components/search/Search';
 
 const App = () => {
+
   return (
     <View style={styles.container}>
-      <div>
-        
-      </div>
+      <Search />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-
+  container: {
+    backgroundColor: 'aqua',
+  }
 });
 
 export default App;
