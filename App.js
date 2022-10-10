@@ -7,10 +7,12 @@
  */
 
 import React from 'react';
-
-import {StyleSheet, Text, View} from 'react-native';
 import Search from './src/components/search/Search';
 
+import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions } from 'react-native';
+
+const wHeight = Dimensions.get('window').height;
 const App = () => {
 
   return (
@@ -22,8 +24,11 @@ const App = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'aqua',
+    height: wHeight,
+    backgroundColor: '#000',
+    paddingVertical: 30,
+    paddingHorizontal: 15,
   }
-});
+})
 
 export default App;

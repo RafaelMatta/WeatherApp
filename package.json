@@ -10,10 +10,9 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/cli-debugger-ui": "^9.0.0",
     "react": "18.1.0",
-    "react-accessible-accordion": "^5.0.0",
     "react-native": "0.70.1",
-    "react-select-async-paginate": "^0.6.2",
     "styled-components": "^5.3.6"
   },
   "devDependencies": {
