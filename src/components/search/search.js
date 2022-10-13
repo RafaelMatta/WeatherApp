@@ -1,108 +1,133 @@
 import { React, useState } from 'react';
 import { StyleSheet, View, Text, TextInput, Button, Touchable, TouchableHighlight } from 'react-native';
-
+import Local from '../../classes/Local';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const citiesURI = 'http://192.168.1.13:3000'
 
-const Search = () => {
-
-  const city = {
-    name: '',
-    forecasts: [],
-  }
+const Search = ({ handleActualForecast }) => {
 
   const [text, setText] = useState('');
   const [cityOptions, setCityOptions] = useState([]);
 
+  const local = {
+    name: '',
+    temperature: 0,
+    condition: '',
+    forecasts: [],
+  }
+
+  const searchActualForecast = async (searchTerm) => {
+    const weatherURI = `https://api.hgbrasil.com/weather?key=b11f68f6&city_name=${searchTerm}`;
+    const data = await fetch(weatherURI);
+    const json = await data.json();
+
+    local.name = json.results.city_name;
+    local.temperature = json.results.temp;
+    local.condition = json.results.description;
+    local.forecasts = json.results.forecast;
+  }
+
   const loadOptions = async (inputValue) => {
-    if (!inputValue)
-      return;
 
     const request = {
       city: inputValue,
       startIndex: 0,
-      quantity: 10
+      quantity: 5
     }
 
     try {
       const response = await fetch(`${citiesURI}/cities/${request.quantity}/${request.startIndex}/${inputValue}`);
-      const options = await response.json();
+      const json = await response.json();
+      const options = json.map(c => ({
+        label: `${c.city_name}, ${c.region_code}`,
+        value: c.city_name
+      }))
 
       setCityOptions(options);
     } catch (error) {
       console.error(error);
     }
-    // console.log(options);
-
-  }
-
-  const searchWeather = async (searchTerm) => {
-    const weatherURI = `https://api.hgbrasil.com/weather?key=b11f68f6&city_name=${searchTerm}`;
-    const data = await fetch(weatherURI);
-    const json = await data.json();
-
-    console.log(json.results.condition_slug);
-    console.log(json.results.city_name);
   }
 
   return (
     <View style={styles.searchBar}>
-      <View style={styles.searchInput}>
-        <TextInput {...textInputProps} value={text} onChangeText={(text) => {
+      <Dropdown
+        search
+        placeholder='Buscar local'
+        searchPlaceholder="Digite o local..."
+        style={styles.dropdown}
+        placeholderStyle={styles.placeholderStyle}
+        selectedTextStyle={styles.selectedTextStyle}
+        inputSearchStyle={styles.inputSearchStyle}
+        iconStyle={styles.iconStyle}
+        containerStyle={styles.containerStyle}
+        value={text}
+        data={cityOptions}
+        labelField={"label"}
+        valueField={"value"}
+        onChangeText={(text) => {
           setText(text);
           loadOptions(text);
-        }} />
-      </View>
-      <View style={styles.dropdown}>
-        {cityOptions.map((c) => {
-          return (
-            <TouchableHighlight underlayColor={'#dedede'} onPress={() => {
-              searchWeather(c.city_name)
-            }}>
-              <Text style={styles.dropdownItem}>{`${c.city_name}, ${c.region_code}`}</Text>
-            </TouchableHighlight>
-          )
-        })}
-      </View>
-
-    </View>
+        }}
+        onChange={(c) => handleActualForecast(local)}
+        renderLeftIcon={() => (
+          <AntDesign
+            name="search1"
+            size={24}
+            style={styles.icon}
+          />
+        )}
+      />
+    </View >
   );
 }
 
-const textInputProps = {
-  placeholder: 'Buscar local',
-}
-
-const colorLightGrey = '#ededed'
+const colorWhite = '#fff'
 
 const styles = StyleSheet.create({
 
-  searchBar: {
-    position: 'relative',
-  },
-
-  searchInput: {
-    backgroundColor: colorLightGrey,
-    borderRadius: 10,
-    paddingLeft: 25,
-    paddingRight: 25,
-  },
-
   dropdown: {
-    position: 'absolute',
-    width: '100%',
-    top: '115%',
+    height: 50,
+    backgroundColor: colorWhite,
     borderRadius: 10,
-    backgroundColor: colorLightGrey,
-    paddingVertical: 15,
-    display: 'flex',
-    flexDirection: 'column',
+    padding: 12,
+    marginBottom: 10,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  item: {
+    padding: 17,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  textItem: {
+    flex: 1,
+    fontSize: 16,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  containerStyle: {
+    borderRadius: 10,
+    marginTop: 5,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+    borderRadius: 10,
   },
 
-  dropdownItem: {
-    paddingVertical: 10,
-    paddingHorizontal: 25
-  }
 });
 
 export default Search;

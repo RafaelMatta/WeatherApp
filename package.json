@@ -13,6 +13,8 @@
     "@react-native-community/cli-debugger-ui": "^9.0.0",
     "react": "18.1.0",
     "react-native": "0.70.1",
+    "react-native-element-dropdown": "^2.3.0",
+    "react-native-vector-icons": "^9.2.0",
     "styled-components": "^5.3.6"
   },
   "devDependencies": {
