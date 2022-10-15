@@ -6,28 +6,10 @@ import { Dropdown } from 'react-native-element-dropdown';
 
 const citiesURI = 'http://192.168.1.13:3000'
 
-const Search = ({ handleActualForecast }) => {
+const Search = ({ searchAndSetPlace }) => {
 
   const [text, setText] = useState('');
   const [cityOptions, setCityOptions] = useState([]);
-
-  const local = {
-    name: '',
-    temperature: 0,
-    condition: '',
-    forecasts: [],
-  }
-
-  const searchActualForecast = async (searchTerm) => {
-    const weatherURI = `https://api.hgbrasil.com/weather?key=b11f68f6&city_name=${searchTerm}`;
-    const data = await fetch(weatherURI);
-    const json = await data.json();
-
-    local.name = json.results.city_name;
-    local.temperature = json.results.temp;
-    local.condition = json.results.description;
-    local.forecasts = json.results.forecast;
-  }
 
   const loadOptions = async (inputValue) => {
 
@@ -71,7 +53,7 @@ const Search = ({ handleActualForecast }) => {
           setText(text);
           loadOptions(text);
         }}
-        onChange={(c) => handleActualForecast(local)}
+        onChange={(c) => searchAndSetPlace(c.value)}
         renderLeftIcon={() => (
           <AntDesign
             name="search1"
