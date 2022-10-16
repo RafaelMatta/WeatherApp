@@ -34,35 +34,9 @@ const Search = ({ searchAndSetPlace }) => {
   }
 
   return (
-    <View style={styles.searchBar}>
-      <Dropdown
-        search
-        placeholder='Buscar local'
-        searchPlaceholder="Digite o local..."
-        style={styles.dropdown}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        inputSearchStyle={styles.inputSearchStyle}
-        iconStyle={styles.iconStyle}
-        containerStyle={styles.containerStyle}
-        value={text}
-        data={cityOptions}
-        labelField={"label"}
-        valueField={"value"}
-        onChangeText={(text) => {
-          setText(text);
-          loadOptions(text);
-        }}
-        onChange={(c) => searchAndSetPlace(c.value)}
-        renderLeftIcon={() => (
-          <AntDesign
-            name="search1"
-            size={24}
-            style={styles.icon}
-          />
-        )}
-      />
-    </View >
+    <View>
+
+    </View>
   );
 }
 
