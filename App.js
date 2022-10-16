@@ -28,7 +28,7 @@ const App = () => {
 
   const [currentPlace, setCurrentPlace] = useState({
     name: '',
-    currentTemperature: 0,
+    currentTemperature: '',
     currentCondition: '',
     currentDescription: '',
     date: null,
@@ -45,7 +45,7 @@ const App = () => {
     setCurrentPlace({
       ...currentPlace,
       name: json.results.city_name,
-      currentTemperature: json.results.temp,
+      currentTemperature: `${json.results.temp}°`,
       currentCondition: json.results.condition_slug,
       currentDescription: json.results.description,
       date: new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full' }).format(new Date()),
@@ -67,7 +67,7 @@ const App = () => {
   }
 
   const sentenceCaseString = function (string) {
-    return string.charAt(0).toUpperCase() + string.slice(1)
+    return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
   }
 
   return (
@@ -81,7 +81,7 @@ const App = () => {
         </View>
 
         <StyledText customStyle={styles.currentWeatherTemperature}>
-          {`${currentPlace.currentTemperature}°`}
+          {`${currentPlace.currentTemperature}`}
         </StyledText>
 
         <View style={[styles.currentWeatherCondition, styles.flexCenter]}>
