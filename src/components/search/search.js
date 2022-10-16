@@ -69,6 +69,9 @@ const Search = ({ searchAndSetPlace }) => {
 const colorWhite = '#fff'
 
 const styles = StyleSheet.create({
+  searchBar: {
+    width: '100%',
+  },
 
   dropdown: {
     height: 50,
