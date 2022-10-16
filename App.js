@@ -40,8 +40,6 @@ const App = () => {
     const data = await fetch(weatherURI);
     const json = await data.json();
 
-    console.log(json);
-
     setCurrentPlace({
       ...currentPlace,
       name: json.results.city_name,
