@@ -3,14 +3,16 @@ import React, { useEffect, useState } from 'react';
 import Search from './src/components/search/Search';
 import StyledText from './src/components/styledText/StyledText'
 
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Dimensions } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
+
 const App = () => {
+  let backgroundImage = '';
 
   const weatherStateIcon = {
     storm: "weather-lightning-rainy",
@@ -28,6 +30,7 @@ const App = () => {
 
   const [currentPlace, setCurrentPlace] = useState({
     name: '',
+    currentPeriod: '',
     currentTemperature: '',
     currentCondition: '',
     currentDescription: '',
@@ -36,13 +39,16 @@ const App = () => {
   })
 
   const searchAndSetPlace = async (searchTerm) => {
-    const weatherURI = `https://api.hgbrasil.com/weather?key=70507e67&city_name=${searchTerm}`;
+    const weatherURI = `https://api.hgbrasil.com/weather?key=c08d0378&city_name=${searchTerm}`;
     const data = await fetch(weatherURI);
     const json = await data.json();
+
+    console.log(json);
 
     setCurrentPlace({
       ...currentPlace,
       name: json.results.city_name,
+      currentPeriod: json.results.currently,
       currentTemperature: `${json.results.temp}°`,
       currentCondition: json.results.condition_slug,
       currentDescription: json.results.description,
@@ -68,69 +74,94 @@ const App = () => {
     return string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
   }
 
+  const setBackgroundImage = function () {
+    return currentPlace.currentPeriod === 'noite' ?
+      require(`./src/assets/background/bg_noite.png`) :
+      require(`./src/assets/background/bg_dia.png`)
+  }
+
   return (
-    <View style={styles.weather}>
-      <Search searchAndSetPlace={searchAndSetPlace} />
+    <ImageBackground source={setBackgroundImage()} resizeMode="cover">
+      <View style={styles.weather}>
+        <View style={styles.weatherContainer}>
+          <Search searchAndSetPlace={searchAndSetPlace} />
 
-      <View style={[styles.currentWeather, styles.flexCenter]}>
-        <View style={[styles.currentWeatherLocalization, styles.flexCenter]}>
-          <StyledText customStyle={styles.currentWeatherCityName}>{currentPlace.name}</StyledText>
-          <StyledText customStyle={styles.currentWeatherDate}>{sentenceCaseString(currentPlace.date)}</StyledText>
-        </View>
-
-        <StyledText customStyle={styles.currentWeatherTemperature}>
-          {`${currentPlace.currentTemperature}`}
-        </StyledText>
-
-        <View style={[styles.currentWeatherCondition, styles.flexCenter]}>
-          <StyledText customStyle={styles.currentWeatherIconBox}>
-            <Icon
-              name={weatherStateIcon[currentPlace.currentCondition]}
-              style={styles.currentWeatherIcon}
-            />
-          </StyledText>
-          <StyledText customStyle={styles.currentWeatherDescription}>{currentPlace.currentDescription}</StyledText>
-        </View>
-
-      </View>
-
-      <View style={styles.forecast}>
-        <ScrollView>{currentPlace.forecasts?.map((f, index) => {
-          return (
-            <View style={styles.forecastItem} key={index}>
-              <View style={styles.forecastTextContainer}>
-                <StyledText customStyle={[styles.forecastDate]}>
-                  {`${sentenceCaseString(f.weekday)}, ${f.day} ${sentenceCaseString(f.month)}`}
-                </StyledText>
-              </View>
-
-              <Text style={styles.forecastIconBox}>
-                <Icon
-                  name={weatherStateIcon[f.condition]}
-                  style={styles.forecastIcon}
-                />
-              </Text>
-
-              <View style={styles.forecastTextContainer}>
-                <StyledText customStyle={styles.forecastTemperature}>{`${Math.trunc(f.temperature)}°`}</StyledText>
-              </View>
+          <View style={[styles.currentWeather, styles.flexCenter]}>
+            <View style={[styles.currentWeatherLocalization, styles.flexCenter]}>
+              <StyledText customStyle={styles.currentWeatherCityName}>{currentPlace.name}</StyledText>
+              <StyledText customStyle={styles.currentWeatherDate}>{sentenceCaseString(currentPlace.date)}</StyledText>
             </View>
-          )
-        })
-        }
-        </ScrollView>
-      </View>
-    </View>
+
+            <StyledText customStyle={styles.currentWeatherTemperature}>
+              {`${currentPlace.currentTemperature}`}
+            </StyledText>
+
+            <View style={[styles.currentWeatherCondition, styles.flexCenter]}>
+              <StyledText customStyle={styles.currentWeatherIconBox}>
+                <Icon
+                  name={weatherStateIcon[currentPlace.currentCondition]}
+                  style={styles.currentWeatherIcon}
+                />
+              </StyledText>
+              <StyledText customStyle={styles.currentWeatherDescription}>
+                {currentPlace.currentDescription}
+              </StyledText>
+            </View>
+
+          </View>
+
+          <View style={styles.forecast}>
+            <ScrollView>{currentPlace.forecasts?.map((f, index) => {
+              return (
+                <View style={styles.forecastItem} key={index}>
+                  <View style={styles.forecastTextContainer}>
+                    <StyledText customStyle={[styles.forecastDate]}>
+                      {`${sentenceCaseString(f.weekday)}, ${f.day} ${sentenceCaseString(f.month)}`}
+                    </StyledText>
+                  </View>
+
+                  <Text style={styles.forecastIconBox}>
+                    <Icon
+                      name={weatherStateIcon[f.condition]}
+                      style={styles.forecastIcon}
+                    />
+                  </Text>
+
+                  <View style={styles.forecastTextContainer}>
+                    <StyledText customStyle={styles.forecastTemperature}>
+                      {`${Math.trunc(f.temperature)}°`}
+                    </StyledText>
+                  </View>
+                </View>
+              )
+            })
+            }
+            </ScrollView>
+          </View>
+        </View>
+      </View >
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
   weather: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+  },
+
+  weatherContainer: {
     height: wHeight,
-    backgroundColor: '#000',
     paddingVertical: 30,
     paddingHorizontal: 15,
     justifyContent: 'space-between',
+  },
+
+  weatherDay: {
+
+  },
+
+  weatherNight: {
+    backgroundColor: '#160a52',
   },
 
   currentWeatherCityName: {
